@@ -16,9 +16,9 @@ object DialogManager {
         builder.setView(binding.root)
         val dialog = builder.create()
         binding.apply {
-            val distance = "Distance: ${item.distance} km"
-            val time = "Time: ${item.time} m"
-            val velocity = "Velocity: ${item.velocity} km/h"
+            val distance = "Расстояние: ${item.distance} км"
+            val time = "Время: ${item.time} ч"
+            val velocity = "Скорость: ${item.velocity} км / ч"
             tvDistance.text = distance
             tvTime.text = time
             tvVelocity.text = velocity
