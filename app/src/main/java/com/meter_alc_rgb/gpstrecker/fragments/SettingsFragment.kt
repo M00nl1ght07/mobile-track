@@ -8,9 +8,26 @@ import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.slider.Slider
 import com.meter_alc_rgb.gpstrecker.R
 
+/**
+ * Фрагмент настроек приложения.
+ * Отвечает за отображение и обработку пользовательских настроек, таких как
+ * частота обновления местоположения и цвет трека на карте.
+ */
 class SettingsFragment : PreferenceFragmentCompat() {
+    /**
+     * Preference для настройки времени обновления местоположения
+     */
     private lateinit var locTime: Preference
+    
+    /**
+     * Preference для настройки цвета трека на карте
+     */
     private lateinit var trackColor: Preference
+    
+    /**
+     * Вызывается при создании фрагмента настроек.
+     * Загружает настройки из XML-ресурса и инициализирует компоненты.
+     */
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
           setPreferencesFromResource(R.xml.main_preferences, rootKey)
         init()
@@ -18,6 +35,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setTRackColorPrefInitValues()
     }
 
+    /**
+     * Инициализирует элементы настроек и устанавливает слушатели изменений.
+     */
     private fun init(){
         locTime = findPreference("update_time_key")!!
         trackColor = findPreference("set_track_color_key")!!
@@ -25,6 +45,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         trackColor.onPreferenceChangeListener = onChangeTrackColorListener()
     }
 
+    /**
+     * Создает слушатель изменений для настройки времени обновления местоположения.
+     * Обновляет заголовок настройки при изменении значения.
+     * 
+     * @return Слушатель изменений для Preference
+     */
     private fun onChangeTimeListener(): Preference.OnPreferenceChangeListener{
         return Preference.OnPreferenceChangeListener{
                 pref, value ->
@@ -36,6 +62,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    /**
+     * Создает слушатель изменений для настройки цвета трека.
+     * Обновляет цвет иконки при изменении значения.
+     * 
+     * @return Слушатель изменений для Preference
+     */
     private fun onChangeTrackColorListener(): Preference.OnPreferenceChangeListener{
         return Preference.OnPreferenceChangeListener{
                 pref, value ->
@@ -44,6 +76,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    /**
+     * Устанавливает начальные значения для настройки времени обновления местоположения.
+     * Обновляет заголовок настройки в соответствии с сохраненным значением.
+     */
     private fun setLocPrefInitValues() {
         val pref = locTime.preferenceManager.sharedPreferences
         val nameArray = resources.getStringArray(R.array.update_loc_name)
@@ -59,6 +95,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    /**
+     * Устанавливает начальные значения для настройки цвета трека.
+     * Обновляет цвет иконки в соответствии с сохраненным значением.
+     * Обрабатывает возможные ошибки при парсинге цвета.
+     */
     private fun setTRackColorPrefInitValues() {
         val pref = trackColor.preferenceManager.sharedPreferences
         val valueArray = resources.getStringArray(R.array.track_color_values)

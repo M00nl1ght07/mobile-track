@@ -22,14 +22,36 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 
 
+/**
+ * Фрагмент для просмотра сохраненного трека на карте.
+ * Отображает маршрут, начальную и конечную точки, а также статистику трека.
+ */
 class ViewTrackFragment : BaseFragment("view_fragment") {
+    /**
+     * Начальная точка трека для центрирования карты
+     */
     private var initPoint: GeoPoint? = null
+    
+    /**
+     * Контроллер карты для управления отображением
+     */
     private lateinit var mapController: IMapController
+    
+    /**
+     * Объект привязки для доступа к элементам интерфейса
+     */
     private lateinit var binding: FragmentViewTrackBinding
+    
+    /**
+     * ViewModel для доступа к данным треков
+     */
     private val model: MyViewModel by activityViewModels{
         MyViewModel.MainViewModelFactory((context?.applicationContext as MainApp).database)
     }
 
+    /**
+     * Создает и возвращает представление фрагмента
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,6 +61,10 @@ class ViewTrackFragment : BaseFragment("view_fragment") {
         return binding.root
     }
 
+    /**
+     * Вызывается после создания представления фрагмента
+     * Инициализирует карту и настраивает обновление данных
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initMap()
@@ -48,10 +74,17 @@ class ViewTrackFragment : BaseFragment("view_fragment") {
         }
     }
 
+    /**
+     * Вызывается при отсоединении фрагмента от активности
+     */
     override fun onDetach() {
         super.onDetach()
     }
 
+    /**
+     * Обновляет отображение трека на карте и информацию о нем
+     * Наблюдает за изменениями выбранного трека
+     */
     private fun updateTrack() = with(binding){
         model.liveDataTrackItem.observe(viewLifecycleOwner){
             val distance = getString(R.string.distance, it.distance)
@@ -71,7 +104,12 @@ class ViewTrackFragment : BaseFragment("view_fragment") {
         }
     }
 
-
+    /**
+     * Преобразует строку с координатами в объект Polyline для отображения на карте
+     * 
+     * @param points Строка с координатами в формате "lat1,lon1/lat2,lon2/..."
+     * @return Объект Polyline с настроенным цветом и точками маршрута
+     */
     private fun getPolylineFromList(points: String): Polyline {
         val defaultColor = "#0017EF"
         val colorStr = PreferenceManager.getDefaultSharedPreferences(
@@ -96,6 +134,9 @@ class ViewTrackFragment : BaseFragment("view_fragment") {
         return polyline
     }
 
+    /**
+     * Инициализирует конфигурацию OSM (OpenStreetMap)
+     */
     private fun initOSM(){
         Configuration.getInstance().load(
             activity?.applicationContext,
@@ -104,6 +145,9 @@ class ViewTrackFragment : BaseFragment("view_fragment") {
             ))
     }
 
+    /**
+     * Инициализирует карту и настраивает ее параметры
+     */
     private fun initMap() = with(binding){
         map.setUseDataConnection(true)
         map.setTileSource(TileSourceFactory.MAPNIK)
@@ -112,6 +156,11 @@ class ViewTrackFragment : BaseFragment("view_fragment") {
         mapController.setZoom(17.0)
     }
 
+    /**
+     * Устанавливает маркеры начала и конца трека на карте
+     * 
+     * @param trackList Список точек трека
+     */
     private fun setMarkers(trackList: List<GeoPoint>) = with(binding){
         val startMarker = Marker(map)
         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
@@ -126,6 +175,9 @@ class ViewTrackFragment : BaseFragment("view_fragment") {
         map.overlays.add(finishMarker)
     }
 
+    /**
+     * Перемещает карту к начальной точке трека
+     */
     private fun goToLocation(){
         activity?.runOnUiThread{
             mapController.animateTo(initPoint)
@@ -133,6 +185,11 @@ class ViewTrackFragment : BaseFragment("view_fragment") {
     }
 
     companion object {
+        /**
+         * Создает новый экземпляр фрагмента
+         * 
+         * @return Новый экземпляр ViewTrackFragment
+         */
         @JvmStatic
         fun newInstance() = ViewTrackFragment()
     }
