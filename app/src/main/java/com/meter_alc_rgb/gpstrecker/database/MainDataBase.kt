@@ -16,7 +16,7 @@ abstract class MainDataBase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     MainDataBase::class.java,
-                    "NecoTrackGps.db"
+                    "LucinaTrackGps.db"
                 ).build()
                 instance
             }

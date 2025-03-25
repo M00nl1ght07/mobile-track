@@ -1,8 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">GpsTrecker</string>
+    <string name="app_name">GPS Трекер</string>
+    <string name="start">Старт</string>
+    <string name="stop">Стоп</string>
+    <string name="save">Сохранить</string>
+    <string name="distance">Расстояние: %1$s км</string>
+    <string name="time">Время: %1$s мин</string>
+    <string name="velocity">Скорость: %1$s км/ч</string>
+    <string name="update_time_title">Интервал обновления:</string>
+    <string name="track_color_title">Цвет трека:</string>
+    <string name="permission_denied">Разрешение не получено!</string>
+    <string name="permission_granted">Разрешение получено!</string>
+    <string name="location_disabled">GPS отключен</string>
+    <string name="location_message">Для работы приложения необходимо включить GPS. Включить?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="cancel">Отмена</string>
     <!-- MAIN SETTINGS SCREEN -->
-    <string name="update_time">Update time:</string>
-    <string name="update_time_summary">Update time of location refresh.</string>
-    <string name="track_color">Track color</string>
-    <string name="track_color_summary">Select track color</string>
+    <string name="update_time">Время обновления:</string>
+    <string name="update_time_summary">Интервал обновления местоположения.</string>
+    <string name="track_color">Цвет трека</string>
+    <string name="track_color_summary">Выберите цвет трека</string>
 </resources>

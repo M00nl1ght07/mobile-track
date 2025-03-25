@@ -87,9 +87,9 @@ class MainFragment : BaseFragment("main") {
     private fun initLocationUpdates() = with(binding) {
         model.liveDataModel.observe(viewLifecycleOwner) {
 
-            val distance = "Distance: ${String.format("%.1f", it.distance)} m"
-            val velocity = "Velocity: ${String.format("%.1f", 3.6 * it.velocity)} km/h"
-            val mVelocity = "Average velocity: ${getMiddleVelocity(it.distance)} km/h"
+            val distance = "Расстояние: ${String.format("%.1f", it.distance)} м"
+            val velocity = "Скорость: ${String.format("%.1f", 3.6 * it.velocity)} км/ч"
+            val mVelocity = "Средняя скорость: ${getMiddleVelocity(it.distance)} км/ч"
             tvVelocity.text = velocity
             tvDistance.text = distance
             tvMiddleVelocity.text = mVelocity
@@ -105,7 +105,6 @@ class MainFragment : BaseFragment("main") {
     }
 
     private fun getTrackPoints(list: List<GeoPoint>): String{
-        // 45.666556,5.978789/46.666556,7.978789
          val sBuilder = StringBuilder()
         list.forEach {
             sBuilder.append("${it.latitude},${it.longitude}/")
@@ -178,7 +177,7 @@ class MainFragment : BaseFragment("main") {
 
     private fun stopTimer(){
         timer?.cancel()
-        model.liveDataTimeCounter.value = "Time: 00:00:00 m"
+        model.liveDataTimeCounter.value = "Время пути: 00:00:00 ч"
     }
 
     private fun checkServiceState(){
@@ -227,11 +226,11 @@ class MainFragment : BaseFragment("main") {
         startTime = if(LocationService.startTime == 0L)
             System.currentTimeMillis()
         else LocationService.startTime
-        timer = Timer("Track time")
+        timer = Timer("Время в пути")
         timer?.schedule(object : TimerTask(){
             override fun run() {
                 activity?.runOnUiThread {
-                    model.liveDataTimeCounter.value = "Time: ${getCurrentTime()} m"
+                    model.liveDataTimeCounter.value = "Время: ${getCurrentTime()}"
                 }
             }
 

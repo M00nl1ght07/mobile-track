@@ -54,9 +54,9 @@ class ViewTrackFragment : BaseFragment("view_fragment") {
 
     private fun updateTrack() = with(binding){
         model.liveDataTrackItem.observe(viewLifecycleOwner){
-            val distance = "Distance: ${it.distance} km"
-            val time = "Time: ${it.time} m"
-            val velocity = "Velocity: ${it.velocity} km/h"
+            val distance = getString(R.string.distance, it.distance)
+            val time = getString(R.string.time, it.time)
+            val velocity = getString(R.string.velocity, it.velocity)
             tvDistance.text = distance
             tvMiddleVelocity.text = velocity
             tvStartTime.text = time
