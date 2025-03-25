@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="Location">
+
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/update_loc_name"
+            android:entryValues="@array/update_loc_value"
+            android:key="update_time_key"
+            android:summary="@string/update_time_summary"
+            android:title="@string/update_time"
+            app:icon="@drawable/ic_time_refresh" />
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/track_color_names"
+            android:entryValues="@array/track_color_values"
+            android:key="set_track_color_key"
+
+            android:summary="@string/track_color_summary"
+            android:title="@string/track_color"
+            app:icon="@drawable/ic_circle_color" />
+    </PreferenceCategory>
+</PreferenceScreen>

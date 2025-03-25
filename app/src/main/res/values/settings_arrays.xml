@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="update_loc_name">
+        <item>3 sec</item>
+        <item>5 sec</item>
+        <item>10 sec</item>
+        <item>15 sec</item>
+    </string-array>
+    <string-array name="update_loc_value">
+        <item>3000</item>
+        <item>5000</item>
+        <item>10000</item>
+        <item>15000</item>
+    </string-array>
+
+    <string-array name="track_color_names">
+        <item>Синий</item>
+        <item>Красный</item>
+        <item>Зеленый</item>
+        <item>Темно-синий</item>
+    </string-array>
+    <string-array name="track_color_values">
+        <item>#0017EF</item>
+        <item>#FF0000</item>
+        <item>#00FF00</item>
+        <item>#0000FF</item>
+    </string-array>
+</resources>

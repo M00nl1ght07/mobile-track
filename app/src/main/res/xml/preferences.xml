@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:icon="@drawable/ic_update"
+        android:key="update_time_key"
+        android:title="Update time interval:"
+        android:entries="@array/update_loc_name"
+        android:entryValues="@array/update_loc_value"
+        android:defaultValue="3000"/>
+        
+    <ListPreference
+        android:icon="@drawable/ic_color"
+        android:key="track_color_key"
+        android:title="Track color:"
+        android:entries="@array/track_color_names"
+        android:entryValues="@array/track_color_values"
+        android:defaultValue="#0017EF"/>
+</PreferenceScreen> 
