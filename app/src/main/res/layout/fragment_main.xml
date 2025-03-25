@@ -2,101 +2,107 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/placeHolder"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray"
-    tools:context=".main.MainActivity">
+    tools:context=".fragments.MainFragment">
 
     <org.osmdroid.views.MapView
         android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardInfo"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toTopOf="parent">
 
-    </org.osmdroid.views.MapView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fbMyLocation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:alpha="0.7"
-        android:backgroundTint="#FFFFFF"
-        android:clickable="false"
-        app:layout_constraintEnd_toEndOf="@+id/map"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_my_location" />
+            <TextView
+                android:id="@+id/tvStartTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:drawableTint="@color/colorPrimary"
+                android:text="Время пути: 00:00:00 ч"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/tvVelocity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#DAFFFFFF"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:text="Скорость: 0.0 км / ч"
-        android:textColor="@color/black"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/tvMiddleVelocity"
-        app:layout_constraintTop_toBottomOf="@+id/tvMiddleVelocity" />
+            <TextView
+                android:id="@+id/tvMiddleVelocity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:drawablePadding="8dp"
+                android:drawableTint="@color/colorAccent"
+                android:text="Средняя скорость: 0.0 км/ч"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp" />
 
-    <TextView
-        android:id="@+id/tvDistance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#DAFFFFFF"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:text="Расстояние: 0.0 км"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/tvVelocity"
-        app:layout_constraintTop_toBottomOf="@+id/tvVelocity" />
+            <TextView
+                android:id="@+id/tvVelocity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:drawablePadding="8dp"
+                android:drawableTint="@color/colorAccent"
+                android:text="Скорость: 0.0 км/ч"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp" />
 
-    <TextView
-        android:id="@+id/tvStartTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:background="#DAFFFFFF"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:text="Время: 00:00:00 м"
-        android:textColor="@color/black"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tvMiddleVelocity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#DAFFFFFF"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:text="Средняя скорость: 0.0 км / ч"
-        android:textColor="@color/black"
-        app:layout_constraintStart_toStartOf="@+id/tvStartTime"
-        app:layout_constraintTop_toBottomOf="@+id/tvStartTime" />
+            <TextView
+                android:id="@+id/tvDistance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:drawablePadding="8dp"
+                android:drawableTint="@color/colorPrimary"
+                android:text="Расстояние: 0.0 м"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fbStartStop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:alpha="0.8"
-        android:backgroundTint="#FFFFFF"
-        android:clickable="false"
-        app:layout_constraintEnd_toEndOf="@+id/fbMyLocation"
-        app:layout_constraintTop_toBottomOf="@+id/fbMyLocation"
-        app:srcCompat="@drawable/ic_start_track" />
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="80dp"
+        android:backgroundTint="@color/colorAccent"
+        android:src="@drawable/ic_start_track"
+        app:borderWidth="0dp"
+        app:elevation="6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/white" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fbMyLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/white"
+        android:src="@drawable/ic_my_location"
+        app:borderWidth="0dp"
+        app:elevation="6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/fbStartStop"
+        app:layout_constraintStart_toStartOf="@+id/fbStartStop"
+        app:tint="@color/colorPrimary" />
+
+    <!-- Нижняя панель навигации должна быть только в MainActivity, а не во фрагменте -->
+
 </androidx.constraintlayout.widget.ConstraintLayout>

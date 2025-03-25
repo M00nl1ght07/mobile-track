@@ -37,17 +37,17 @@ object DialogManager {
     fun showLocationEnableDialog(context: Context, listener: Listener){
         val builder = AlertDialog.Builder(context)
         val dialog = builder.create()
-        dialog.setTitle("Location is disabled!")
-        dialog.setMessage("Do you want enable location?")
+        dialog.setTitle(R.string.location_disabled)
+        dialog.setMessage(context.getString(R.string.location_message))
         dialog.setButton(
             AlertDialog.BUTTON_NEGATIVE,
-            "No"
+            context.getString(R.string.no)
         ) { _, _ ->
             dialog.dismiss()
         }
         dialog.setButton(
             AlertDialog.BUTTON_POSITIVE,
-            "Yes"
+            context.getString(R.string.yes)
         ) { _, _ ->
             listener.onClick()
         }

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-     <item
-         android:id="@+id/id_map"
-         android:icon="@drawable/ic_map"
-         android:title="Карта" />
-     <item
-         android:id="@+id/id_list"
-         android:icon="@drawable/ic_list"
-         android:title="Маршруты" />
-     <item
-         android:id="@+id/id_settings"
-         android:icon="@drawable/ic_settings"
-         android:title="Настройки" />
+    <item
+        android:id="@+id/id_map"
+        android:icon="@drawable/ic_map"
+        android:title="Карта" />
+    <item
+        android:id="@+id/id_list"
+        android:icon="@drawable/ic_list"
+        android:title="Маршруты" />
+    <item
+        android:id="@+id/id_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="Настройки" />
 </menu>
