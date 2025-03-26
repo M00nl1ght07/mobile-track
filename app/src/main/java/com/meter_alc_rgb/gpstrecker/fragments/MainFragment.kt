@@ -48,7 +48,7 @@ const val OSM_PREFERENCES = "osm_prefs"
 /**
  * Начальный уровень масштабирования карты
  */
-const val INIT_ZOOM = 20.0
+const val INIT_ZOOM = 15.0
 
 /**
  * Главный фрагмент приложения, отображающий карту и элементы управления треком.
@@ -99,44 +99,145 @@ class MainFragment : BaseFragment("main") {
     /**
      * Цвет линии трека на карте
      */
-    private var lineColor = Color.BLUE
+    private var lineColor = Color.parseColor("#0017EF")
     
     /**
-     * ViewModel для хранения и управления данными приложения
+     * Полилиния для отображения трека на карте
+     */
+    private var polyline: Polyline? = null
+    
+    /**
+     * ViewModel для доступа к данным треков и операций с ними
      */
     private val model: MyViewModel by activityViewModels{
-        MyViewModel.MainViewModelFactory((context?.applicationContext as MainApp).database)
+        MyViewModel.MainViewModelFactory((requireContext().applicationContext as MainApp).database)
     }
-
+    
     /**
-     * Создает и настраивает представление фрагмента
+     * Создает представление фрагмента
      */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        initOSM()
         binding = FragmentMainBinding.inflate(inflater, container, false)
         return binding.root
     }
-
+    
     /**
-     * Вызывается после создания представления фрагмента.
-     * Инициализирует все необходимые компоненты и проверяет состояние приложения.
+     * Вызывается после создания представления фрагмента
+     * Инициализирует компоненты и настраивает слушатели
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        permissionsListener()
-        checkPermissions()
-        initButtons()
+        registerPermissionListener()
+        checkPermission()
+        setOnClicks()
         initLocationUpdates()
         timeUpdate()
         registerFilter()
         checkServiceState()
         checkLocationEnabled()
-        Log.d("MyLog","Is service running: ${LocationService.isRunning}")
+        initOSM()
+        initMap()
     }
-
+    
+    /**
+     * Вызывается при возобновлении фрагмента.
+     * Обновляет настройки, включая цвет трека.
+     */
+    override fun onResume() {
+        super.onResume()
+        updateTrackColorFromPreferences()
+    }
+    
+    /**
+     * Обновляет цвет трека из настроек приложения.
+     */
+    fun updateTrackColorFromPreferences() {
+        val defaultColor = "#0017EF"
+        val colorStr = PreferenceManager.getDefaultSharedPreferences(
+            activity as AppCompatActivity
+        ).getString("track_color_key", defaultColor) ?: defaultColor
+        
+        val newColor = try {
+            Color.parseColor(colorStr)
+        } catch (e: IllegalArgumentException) {
+            Color.parseColor(defaultColor)
+        }
+        
+        // Обновляем цвет только если он изменился
+        if (lineColor != newColor) {
+            lineColor = newColor
+            
+            // Обновляем цвет существующей полилинии, если она уже создана
+            polyline?.let {
+                it.outlinePaint.color = lineColor
+                binding.map.invalidate() // Перерисовываем карту
+            }
+            
+            // Обновляем цвета всех полилиний на карте
+            for (overlay in binding.map.overlays) {
+                if (overlay is Polyline) {
+                    overlay.outlinePaint.color = lineColor
+                }
+            }
+            binding.map.invalidate()
+        }
+    }
+    
+    /**
+     * Обновляет полилинию на карте, добавляя новую точку
+     */
+    private fun updatePolyline(geoPoint: GeoPoint) {
+        if (polyline == null) {
+            polyline = Polyline().apply {
+                outlinePaint.color = lineColor // Используем текущий цвет
+                outlinePaint.strokeWidth = 5f
+            }
+            binding.map.overlays.add(polyline)
+        }
+        polyline?.addPoint(geoPoint)
+        binding.map.invalidate()
+    }
+    
+    /**
+     * Настраивает слушатель результатов запроса разрешений
+     */
+    private fun registerPermissionListener() {
+        pLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) {
+            if (it[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
+                initMap()
+                checkLocationEnabled()
+            } else {
+                showToast(R.string.permission_denied)
+            }
+        }
+    }
+    
+    /**
+     * Проверяет наличие необходимых разрешений и запрашивает их при необходимости
+     */
+    private fun checkPermission() {
+        if (!checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                pLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                    )
+                )
+            } else {
+                pLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
+            }
+        } else {
+            initMap()
+            checkLocationEnabled()
+        }
+    }
+    
     /**
      * Регистрирует приемник широковещательных сообщений для получения обновлений местоположения
      */
@@ -195,7 +296,7 @@ class MainFragment : BaseFragment("main") {
     /**
      * Инициализирует кнопки управления
      */
-    private fun initButtons() = with(binding){
+    private fun setOnClicks() = with(binding){
         val onClick = onClick()
         fbStartStop.setOnClickListener(onClick)
         fbMyLocation.setOnClickListener(onClick)
@@ -313,6 +414,8 @@ class MainFragment : BaseFragment("main") {
                     ) as LocationModel
                 activity?.runOnUiThread {
                     model.liveDataModel.value = dataModel
+                    // Обновляем текущий цвет из настроек перед добавлением новой полилинии
+                    updateTrackColorFromPreferences()
                     binding.map.overlays.add(getPolylineFromList(dataModel.polyline))
                 }
             }
@@ -328,6 +431,7 @@ class MainFragment : BaseFragment("main") {
     private fun getPolylineFromList(list: List<GeoPoint>): Polyline{
         val polyline = Polyline()
         polyline.outlinePaint.color = lineColor
+        polyline.outlinePaint.strokeWidth = 5f
         list.forEach {
             polyline.addPoint(it)
         }
@@ -374,40 +478,6 @@ class MainFragment : BaseFragment("main") {
     }
 
     /**
-     * Проверяет наличие необходимых разрешений и запрашивает их при необходимости
-     */
-    private fun checkPermissions(){
-        if(!checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                pLauncher.launch(
-                    arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                    )
-                )
-            } else {
-                pLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
-            }
-        } else {
-            initMap()
-        }
-    }
-
-    /**
-     * Настраивает слушатель результатов запроса разрешений
-     */
-    private fun permissionsListener(){
-        pLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){
-            if(it[Manifest.permission.ACCESS_FINE_LOCATION] == true){
-                showToast("Разрешение получено!")
-                initMap()
-            } else {
-                showToast("Нет разрешения!")
-            }
-        }
-    }
-
-    /**
      * Проверяет, включены ли службы геолокации на устройстве
      * и предлагает включить их, если они отключены
      */
@@ -439,16 +509,7 @@ class MainFragment : BaseFragment("main") {
      * Инициализирует карту и настраивает ее параметры
      */
     private fun initMap() = with(binding){
-        val defaultColor = "#0017EF"
-        val colorStr = PreferenceManager.getDefaultSharedPreferences(
-            activity as AppCompatActivity
-        ).getString("track_color_key", defaultColor) ?: defaultColor
-        
-        lineColor = try {
-            Color.parseColor(colorStr)
-        } catch (e: IllegalArgumentException) {
-            Color.parseColor(defaultColor)
-        }
+        updateTrackColorFromPreferences()
         
         map.setUseDataConnection(true)
         map.setTileSource(TileSourceFactory.MAPNIK)

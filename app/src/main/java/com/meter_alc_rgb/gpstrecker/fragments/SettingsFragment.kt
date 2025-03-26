@@ -7,6 +7,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.slider.Slider
 import com.meter_alc_rgb.gpstrecker.R
+import com.meter_alc_rgb.gpstrecker.fragments.MainFragment
 
 /**
  * Фрагмент настроек приложения.
@@ -40,7 +41,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
      */
     private fun init(){
         locTime = findPreference("update_time_key")!!
-        trackColor = findPreference("set_track_color_key")!!
+        trackColor = findPreference("track_color_key")!!
         locTime.onPreferenceChangeListener = onChangeTimeListener()
         trackColor.onPreferenceChangeListener = onChangeTrackColorListener()
     }
@@ -68,10 +69,25 @@ class SettingsFragment : PreferenceFragmentCompat() {
      * 
      * @return Слушатель изменений для Preference
      */
-    private fun onChangeTrackColorListener(): Preference.OnPreferenceChangeListener{
-        return Preference.OnPreferenceChangeListener{
-                pref, value ->
-            pref.icon?.let { changeDrawableColor(it, Color.parseColor(value.toString())) }
+    private fun onChangeTrackColorListener(): Preference.OnPreferenceChangeListener {
+        return Preference.OnPreferenceChangeListener { pref, value ->
+            try {
+                // Меняем цвет иконки настройки
+                val colorValue = value.toString()
+                val color = Color.parseColor(colorValue)
+                pref.icon?.let { changeDrawableColor(it, color) }
+                
+                // Принудительно применяем изменение сразу ко всем фрагментам
+                val fragmentManager = requireActivity().supportFragmentManager
+                for (fragment in fragmentManager.fragments) {
+                    if (fragment is MainFragment) {
+                        fragment.updateTrackColorFromPreferences()
+                        break
+                    }
+                }
+            } catch (e: Exception) {
+                // Обрабатываем ошибки парсинга цвета
+            }
             true
         }
     }
