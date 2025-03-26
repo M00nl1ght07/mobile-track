@@ -120,7 +120,7 @@ class LocationService : Service() {
         )
         val notification: Notification = NotificationCompat.Builder(
             this, AppConstants.CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.mipmap.gpstracker)
             .setContentTitle("Трекер запущен")
             .setContentText("Отслеживание местоположения активно")
             .setContentIntent(pendingIntent)
