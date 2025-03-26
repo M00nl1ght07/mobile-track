@@ -16,7 +16,6 @@ import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
 import com.google.android.gms.location.*
-import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.meter_alc_rgb.gpstrecker.R
 import com.meter_alc_rgb.gpstrecker.main.MainActivity
 import org.osmdroid.util.GeoPoint
@@ -36,7 +35,7 @@ class LocationService : Service() {
     private val locationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             super.onLocationResult(locationResult)
-            val currentLocation: Location = locationResult.lastLocation!!
+            val currentLocation = locationResult.lastLocation ?: return
 
             if (lastLocation != null) {
                 pLine.add(GeoPoint(currentLocation.latitude, currentLocation.longitude))
@@ -106,16 +105,24 @@ class LocationService : Service() {
             manager.createNotificationChannel(serviceChannel)
         }
         val notificationIntent = Intent(this, MainActivity::class.java)
+        
+        // Исправление для Android 12+: добавление флага mutable/immutable
+        val pendingIntentFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.FLAG_IMMUTABLE
+        } else {
+            0
+        }
+        
         val pendingIntent = PendingIntent.getActivity(
             this,
             AppConstants.SERVICE_LOCATION_REQUEST_CODE,
-            notificationIntent, 0
+            notificationIntent, pendingIntentFlag
         )
         val notification: Notification = NotificationCompat.Builder(
             this, AppConstants.CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("Tracker")
-            .setContentTitle("Location on background")
+            .setContentTitle("Трекер запущен")
+            .setContentText("Отслеживание местоположения активно")
             .setContentIntent(pendingIntent)
             .build()
         startForeground(AppConstants.LOCATION_SERVICE_NOTIF_ID, notification)
@@ -139,12 +146,22 @@ class LocationService : Service() {
             this
         ).getString("update_time_key", "3000"
         )?.toLong() ?: 3000
-        locationRequest = LocationRequest.create()
+        
+        // Обновленный способ создания LocationRequest для новых API
+        locationRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            LocationRequest.Builder(interval)
+                .setMinUpdateIntervalMillis(interval)
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+                .build()
+        } else {
+            LocationRequest.create().apply {
+                this.interval = interval
+                this.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            }
+        }
+        
         Log.d("MyLog","Update interval: $interval")
-        locationRequest?.interval = interval
-        locationRequest?.priority = PRIORITY_HIGH_ACCURACY
-        mFusedLocationClient =
-            LocationServices.getFusedLocationProviderClient(baseContext)
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(baseContext)
     }
 
     companion object {

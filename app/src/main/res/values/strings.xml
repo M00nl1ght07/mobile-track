@@ -21,4 +21,6 @@
     <string name="update_time_summary">Интервал обновления местоположения.</string>
     <string name="track_color">Цвет трека</string>
     <string name="track_color_summary">Выберите цвет трека</string>
+    <string name="background_location_title">Фоновый доступ к местоположению</string>
+    <string name="background_location_message">Для правильной работы трекера в фоновом режиме необходим постоянный доступ к местоположению. Пожалуйста, выберите опцию "Разрешить всегда" на следующем экране.</string>
 </resources>

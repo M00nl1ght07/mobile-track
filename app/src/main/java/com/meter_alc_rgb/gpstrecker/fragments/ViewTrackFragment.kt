@@ -138,11 +138,15 @@ class ViewTrackFragment : BaseFragment("view_fragment") {
      * Инициализирует конфигурацию OSM (OpenStreetMap)
      */
     private fun initOSM(){
+        // Настройка для поддержки Android 10+ (API 29+)
+        val ctx = activity?.applicationContext
         Configuration.getInstance().load(
-            activity?.applicationContext,
-            activity?.getSharedPreferences(
-                OSM_PREFERENCES, Context.MODE_PRIVATE
-            ))
+            ctx,
+            ctx?.let { PreferenceManager.getDefaultSharedPreferences(it) }
+        )
+        
+        // Установка userAgent для избежания проблем с серверами OSM
+        Configuration.getInstance().userAgentValue = context?.packageName
     }
 
     /**

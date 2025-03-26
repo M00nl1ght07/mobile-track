@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Разрешение требуется для Android 12+ -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 
     <application
         android:name=".main.MainApp"
@@ -19,7 +21,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GpsTrecker"
-        tools:targetApi="31">
+        tools:targetApi="33">
         <activity
             android:name=".main.MainActivity"
             android:exported="true">
@@ -33,7 +35,7 @@
             android:name=".utils.LocationService"
             android:foregroundServiceType="location"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

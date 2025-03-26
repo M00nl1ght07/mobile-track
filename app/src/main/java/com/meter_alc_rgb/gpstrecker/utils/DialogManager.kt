@@ -53,6 +53,34 @@ object DialogManager {
         }
         dialog.show()
     }
+    
+    /**
+     * Показывает диалог с объяснением необходимости фонового доступа к местоположению
+     * Требуется для Android 11+ (API 30+), так как разрешение ACCESS_BACKGROUND_LOCATION
+     * должно запрашиваться отдельно с объяснением.
+     * 
+     * @param context Контекст для создания диалога
+     * @param listener Слушатель для обработки нажатия на кнопку
+     */
+    fun showBackgroundLocationDialog(context: Context, listener: Listener) {
+        val builder = AlertDialog.Builder(context)
+        val dialog = builder.create()
+        dialog.setTitle(R.string.background_location_title)
+        dialog.setMessage(context.getString(R.string.background_location_message))
+        dialog.setButton(
+            AlertDialog.BUTTON_NEGATIVE,
+            context.getString(R.string.no)
+        ) { _, _ ->
+            dialog.dismiss()
+        }
+        dialog.setButton(
+            AlertDialog.BUTTON_POSITIVE,
+            context.getString(R.string.yes)
+        ) { _, _ ->
+            listener.onClick()
+        }
+        dialog.show()
+    }
 
     interface Listener{
         fun onClick()

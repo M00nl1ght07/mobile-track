@@ -222,20 +222,44 @@ class MainFragment : BaseFragment("main") {
      */
     private fun checkPermission() {
         if (!checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                pLauncher.launch(
-                    arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                    )
-                )
-            } else {
-                pLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
-            }
+            // На Android 11 (API 30) и выше разрешение на фоновую локацию нужно запрашивать отдельно
+            pLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
         } else {
+            // Проверяем необходимость запроса фонового разрешения на Android 11+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    // На Android 11+ запрашиваем фоновую локацию отдельно
+                    if (!checkPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+                        requestBackgroundLocationPermission()
+                    }
+                } else {
+                    // На Android 10 запрашиваем оба разрешения вместе
+                    if (!checkPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+                        pLauncher.launch(arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                        ))
+                    }
+                }
+            }
             initMap()
             checkLocationEnabled()
         }
+    }
+    
+    /**
+     * Запрашивает разрешение на фоновую локацию на Android 11+
+     * Показывает диалог с объяснением перед запросом разрешения
+     */
+    private fun requestBackgroundLocationPermission() {
+        DialogManager.showBackgroundLocationDialog(activity as AppCompatActivity,
+            object : DialogManager.Listener {
+                override fun onClick() {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        pLauncher.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+                    }
+                }
+            })
     }
     
     /**
@@ -337,7 +361,11 @@ class MainFragment : BaseFragment("main") {
         val i = Intent(context, LocationService::class.java).apply {
             putExtra("start_time", startTime)
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        
+        // На Android 12+ (API 31+) нужно использовать другой метод запуска foreground сервиса
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            activity?.startForegroundService(i)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             activity?.startForegroundService(i)
         } else {
             activity?.startService(i)
@@ -498,11 +526,17 @@ class MainFragment : BaseFragment("main") {
      * Инициализирует библиотеку OSM (OpenStreetMap)
      */
     private fun initOSM(){
+        // Настройка для поддержки Android 10+ (API 29+)
+        val ctx = activity?.applicationContext
         Configuration.getInstance().load(
-            activity?.applicationContext,
-            activity?.getSharedPreferences(
-                OSM_PREFERENCES, Context.MODE_PRIVATE
-            ))
+            ctx,
+            ctx?.let { PreferenceManager.getDefaultSharedPreferences(it) }
+        )
+        
+        // Установка userAgent для избежания проблем с серверами OSM
+        activity?.applicationContext?.packageName?.let {
+            Configuration.getInstance().userAgentValue = it
+        }
     }
 
     /**
